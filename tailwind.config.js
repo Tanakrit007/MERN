@@ -1,17 +1,19 @@
-// tailwind.config.js
+// tanakrit007/mern/MERN-9b5356adf459c3c22d4aa4983023ebcaf3791fef/tailwind.config.js
 /** @type {import('tailwindcss').Config} */
 export default {
-  // ⚠️ ตรวจสอบว่า content ครอบคลุมไฟล์ทั้งหมด
   content: [
     "./index.html",
+    // ⚠️ Path ถูกต้องแล้ว
     "./src/**/*.{js,ts,jsx,tsx}", 
   ],
   theme: {
     extend: {},
   },
   plugins: [
-    require("daisyui"), // 👈 DaisyUI ต้องเปิดใช้งานที่นี่
-    // แนะนำ: require('@tailwindcss/typography'), สำหรับหน้า Post.jsx
+    require("daisyui"), 
+    // ✅ เพิ่ม plugins ที่จำเป็นสำหรับการแสดงผล
+    require('@tailwindcss/typography'), 
+    require('@tailwindcss/line-clamp'), 
   ],
   // ...
 }

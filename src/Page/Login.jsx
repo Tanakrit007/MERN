@@ -1,71 +1,42 @@
+// tanakrit007/mern/MERN-9b5356adf459c3c22d4aa4983023ebcaf3791fef/src/Page/Login.jsx
 import React from "react";
-// ปรับเส้นทางตามโครงสร้างไฟล์ของคุณ
-import Navbar from "../Components/Navbar";
-import Footer from "../Components/Footer";
-
-const Login = () => {
-  // ฟังก์ชันสำหรับจัดการเมื่อกดปุ่ม Sign In
-  const handleLogin = (e) => {
-    e.preventDefault();
-    // ⚠️ โค้ดส่วนนี้คือส่วนที่คุณต้องเพิ่ม Logic การยืนยันตัวตนจริง ๆ
-    console.log("Login button clicked! Time to authenticate.");
-    alert("กำลังเข้าสู่ระบบ..."); // แสดงข้อความชั่วคราว
-  };
-
+// ✅ แก้ไข Path ให้ถูกต้อง: "../Components/ชื่อไฟล์"
+import Navbar from "../Components/Navbar.jsx"; 
+import Footer from "../Components/Footer.jsx";
+// ✅ แก้ชื่อ Component จาก Login เป็น LoginPage
+const LoginPage = () => {
+  // ... handleLogin function
+  // ... Pure Tailwind HTML/JSX structure (ตามที่เคยให้ไว้ก่อนหน้านี้)
+  
   return (
-    // 1. พื้นหลังหลัก: ใช้ min-h-screen และพื้นหลังไล่เฉดสี
     <div className="min-h-screen flex flex-col">
       <Navbar />
 
       <main
         className="flex-grow flex items-center justify-center p-4"
         style={{
-          // พื้นหลังไล่เฉดสีม่วงน้ำเงินตามภาพ
-          background:
-            "linear-gradient(135deg, #4b0082 0%, #8a2be2 40%, #7b68ee 60%, #4682b4 100%)",
+          background: "linear-gradient(135deg, #4b0082 0%, #8a2be2 40%, #7b68ee 60%, #4682b4 100%)",
         }}
       >
-        {/* 2. Form Card: กล่องสีขาวอยู่ตรงกลาง */}
-        <div className="card w-full max-w-sm bg-white shadow-xl p-8">
+        {/* ✅ PURE Tailwind Form Card */}
+        <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-sm">
           <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
             Login
           </h2>
 
-          <form onSubmit={handleLogin}>
-            {/* 3. Input Username */}
-            <div className="form-control mb-4">
-              <label className="label">
-                <span className="label-text text-gray-700">Username</span>
-              </label>
-              <input
-                type="text"
-                placeholder="Username"
-                className="input input-bordered w-full bg-gray-100"
-                required
-              />
+          <form>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+              <input type="text" placeholder="Username" className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
+            </div>
+            
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <input type="password" placeholder="Password" className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500" required />
             </div>
 
-            {/* 4. Input Password */}
-            <div className="form-control mb-6">
-              <label className="label">
-                <span className="label-text text-gray-700">Password</span>
-              </label>
-              <input
-                type="password"
-                placeholder="Password"
-                className="input input-bordered w-full bg-gray-100"
-                required
-              />
-            </div>
-
-            {/* 5. ปุ่ม Sign In */}
-            <div className="form-control mt-6">
-              <button
-                type="submit"
-                className="btn text-white"
-                // ใช้ Tailwind Custom Gradient สำหรับปุ่ม (ตัวอย่างสีเดียว)
-                style={{ background: "#4c6ef5", borderColor: "#4c6ef5" }}
-              >
+            <div className="mt-6">
+              <button type="submit" className="w-full py-2 px-4 rounded-lg font-semibold text-white transition duration-200" style={{ background: "#4c6ef5", borderColor: "#4c6ef5" }} >
                 Sign In
               </button>
             </div>
@@ -78,4 +49,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default LoginPage; // ✅ เปลี่ยน Export
