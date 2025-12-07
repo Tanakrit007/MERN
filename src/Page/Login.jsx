@@ -3,7 +3,7 @@ import React from "react";
 import Navbar from "../Components/Navbar";
 import Footer from "../Components/Footer";
 
-const LoginPage = () => {
+const Login = () => {
   // ฟังก์ชันสำหรับจัดการเมื่อกดปุ่ม Sign In
   const handleLogin = (e) => {
     e.preventDefault();
@@ -78,4 +78,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default Login;

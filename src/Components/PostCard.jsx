@@ -1,57 +1,39 @@
-import React from "react";
+// ใน Component: PostCard.jsx (ใช้ Border และ Background พื้นฐานที่เสถียร)
+import React from 'react';
 
 const PostCard = ({ title, author, date, excerpt, imageUrl, isImageLeft }) => {
-  // กำหนดลำดับการแสดงผล (รูปซ้าย/ขวา)
-  const contentOrder = isImageLeft ? "lg:flex-row" : "lg:flex-row-reverse";
+  const contentOrder = isImageLeft ? 'lg:flex-row' : 'lg:flex-row-reverse';
 
   return (
-    // 1. การ์ดหลัก: ใช้ Tailwind เพื่อสร้างกรอบสีไล่เฉด
-    <div
-      className="relative mb-10 p-1 rounded-xl group"
-      style={{
-        background: "linear-gradient(to right, #6a5acd, #8a2be2, #4b0082)",
-      }}
-    >
-      {/* 2. เนื้อหาภายใน: ใช้สีพื้นหลังเข้มเพื่อให้กรอบสีไล่เฉดแสดงออกมา */}
-      <div
-        className={`card lg:card-side shadow-2xl bg-[#202330] rounded-xl overflow-hidden`}
-      >
-        <div className={`flex flex-col lg:flex ${contentOrder} w-full`}>
-          {/* ส่วนรูปภาพ */}
-          <figure className="lg:w-2/5 w-full">
-            <img
-              src={imageUrl}
-              alt={title}
-              className="w-full h-full object-cover aspect-video"
+    // การ์ดหลัก: ใช้พื้นหลังสีเข้มและขอบสีม่วงอ่อน (แทนที่จะใช้ gradient ซับซ้อน)
+    <div className="mb-8 p-6 rounded-xl shadow-2xl text-white 
+                    border-2 border-purple-600 bg-[#202330]"> 
+      <div className={`flex flex-col lg:flex ${contentOrder} w-full gap-4`}>
+        
+        {/* 1. ส่วนรูปภาพ */}
+        <div className="lg:w-2/5 w-full flex-shrink-0">
+          <figure className="aspect-video overflow-hidden rounded-lg">
+            <img 
+              src={imageUrl} 
+              alt={title} 
+              className="w-full h-full object-cover"
             />
           </figure>
+        </div>
 
-          {/* ส่วนเนื้อหา */}
-          <div className="card-body p-6 lg:w-3/5 w-full text-white">
-            {/* หัวข้อ */}
-            <h2 className="card-title text-2xl font-bold leading-snug text-violet-300">
-              {title}
-            </h2>
-
-            {/* รายละเอียดผู้เขียน/วันที่ */}
-            <div className="text-sm text-gray-400 mb-2">
-              <span className="font-semibold text-violet-400">{author}</span> |{" "}
-              <span className="text-sm">{date}</span>
-            </div>
-
-            {/* สรุปเนื้อหา */}
-            <p className="text-base text-gray-300 line-clamp-3">{excerpt}</p>
-
-            {/* ปุ่มอ่านต่อ (Optional) */}
-            <div className="card-actions justify-end mt-4">
-              <a
-                href="#"
-                className="text-sm font-semibold text-violet-400 hover:text-violet-300 transition-colors"
-              >
-                อ่านต่อ »
-              </a>
-            </div>
-          </div>
+        {/* 2. ส่วนเนื้อหา */}
+        <div className="lg:w-3/5 w-full">
+          {/* หัวข้อ */}
+          <h2 className="text-2xl font-bold leading-snug text-violet-300 mb-2">
+            {title}
+          </h2>
+          {/* ... ส่วนอื่น ๆ ... */}
+          <p className="text-base text-gray-300 line-clamp-3 mb-4">
+            {excerpt}
+          </p>
+          <a href="#" className="text-sm font-semibold text-violet-400 hover:text-violet-300 transition-colors">
+            อ่านต่อ »
+          </a>
         </div>
       </div>
     </div>

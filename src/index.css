@@ -1,2 +1,4 @@
-@import "tailwindcss";
-@plugin "daisyui";
+/* ในไฟล์ src/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
