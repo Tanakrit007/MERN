@@ -1,42 +1,71 @@
-// Navbar ที่ใช้ PURE Tailwind Flexbox และปรับขนาด font
 import React from "react";
+import { Link } from "react-router";
 
-const Navbar = ({ showAuthLinks = true, showPostLinks = false, userName = "wutthaj" }) => {
+const NavBar = () => {
+  const menuItems = [
+    { link: "/", text: "Home" },
+    { link: "/create", text: "Create" },
+    { link: "/", text: "Posts" },
+  ];
+
   return (
-    <header className="bg-[#202330] text-white">
-      <div className="flex justify-between items-center container mx-auto px-4 py-3">
-        <div className="flex-shrink-0">
-          <a href="/" className="text-xl font-bold normal-case text-white">
-            SE NPRU Blog
-          </a>
+    <div className="navbar bg-base-100 shadow-sm">
+      <div className="navbar-start">
+        <div className="dropdown">
+          <label tabIndex={0} className="btn btn-ghost lg:hidden">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              {""}
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M4 6h16M4 12h8m-8 6h16"
+              />
+            </svg>
+          </label>
+          <ul
+            tabIndex="-1"
+            className="menu menu-sm dropdown-content bg-base-100 rounded-box mt-3 w-52 p-2 shadow"
+          >
+            {menuItems.map((item) => (
+              <li>
+                <a href={item.link}>{item.text}</a>
+              </li>
+            ))}
+          </ul>
         </div>
 
-        <nav className="flex space-x-5">
-            {/* Links สำหรับ Home/Login/Register */}
-            {showAuthLinks && (
-                <>
-                    <a href="/login" className="text-sm opacity-80 hover:opacity-100 transition duration-200">
-                        Login
-                    </a>
-                    <a href="/register" className="text-sm opacity-80 hover:opacity-100 transition duration-200">
-                        Register
-                    </a>
-                </>
-            )}
-
-            {/* Links สำหรับหน้า Admin/เจ้าของบทความ */}
-            {showPostLinks && (
-                <>
-                    <a href="/create-post" className="text-sm text-gray-300 hover:text-white transition duration-200">
-                        Create new post
-                    </a>
-                    <span className="text-sm text-gray-400">Logout ({userName})</span>
-                </>
-            )}
-        </nav>
+        <Link to="/" className="btn btn-ghost text-xl">
+          MERN Blog
+        </Link>
       </div>
-      <div className="h-1 w-full bg-gradient-to-r from-violet-600 via-purple-500 to-fuchsia-600"></div>
-    </header>
-  );  
+
+      <div className="navbar-center hidden lg:flex">
+        <ul className="menu menu-horizontal px-1">
+          {menuItems.map((item) => (
+            <li>
+              <a href={item.link}>{item.text}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="navbar-end space-x-2">
+        <a href="/register" className="btn ">
+          Register
+        </a>
+        <a href="/login" className="btn ">
+          Login
+        </a>
+      </div>
+    </div>
+  );
 };
-export default Navbar;
+
+export default NavBar;
