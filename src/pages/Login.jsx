@@ -1,22 +1,54 @@
-import React, { useState } from "react";
-import { useNavigate, Link } from "react-router";
+import { useState } from "react";
+import AuthService from "../services/authentication.service";
+import Swal from "sweetalert2";
 
 const Login = () => {
-  const [Username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const navigate = useNavigate();
+  // ปรับ State ให้เป็น Object เหมือนหน้า Register เพื่อความง่ายในการส่งข้อมูล
+  const [user, setUser] = useState({
+    username: "",
+    password: "",
+  });
 
-  const handleSubmit = (e) => {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUser((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // แบบง่าย ๆ สำหรับตอนนี้จะเก็บเป็นการจำลองการล็อกอิน
-    if (!Username || !password) {
-      alert("กรุณากรอกอีเมลและรหัสผ่าน");
+    if (!user.username || !user.password) {
+      Swal.fire({
+        title: "กรุณากรอกข้อมูลให้ครบถ้วน",
+        icon: "warning",
+      });
       return;
     }
-    // จำลองความสำเร็จ
-    alert(`ยินดีต้อนรับ ${Username}`);
-    navigate(`/`);
+
+    try {
+      // เรียกใช้ AuthService (สมมติว่าคุณมีฟังก์ชัน login เตรียมไว้)
+      const response = await AuthService.login(user.username, user.password);
+
+      if (response.status === 200) {
+        Swal.fire({
+          title: "เข้าสู่ระบบสำเร็จ",
+          text: `ยินดีต้อนรับคุณ ${user.username}`,
+          icon: "success",
+          timer: 1500,
+          showConfirmButton: false,
+        }).then(() => {
+          // ใช้ window.location แทน navigate
+          window.location.href = "/";
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        title: "เข้าสู่ระบบล้มเหลว",
+        text:
+          error.response?.data?.message || "Username หรือ Password ไม่ถูกต้อง",
+        icon: "error",
+      });
+    }
   };
 
   return (
@@ -27,11 +59,12 @@ const Login = () => {
           <div>
             <label className="block text-sm font-medium mb-1">Username</label>
             <input
-              type="Username"
-              value={Username}
-              onChange={(e) => setUsername(e.target.value)}
+              type="text"
+              name="username" // เพิ่ม name ให้ตรงกับ key ใน state
+              value={user.username}
+              onChange={handleChange}
               className="w-full border rounded px-3 py-2"
-              placeholder=""
+              placeholder="กรอกชื่อผู้ใช้"
               required
             />
           </div>
@@ -40,8 +73,9 @@ const Login = () => {
             <label className="block text-sm font-medium mb-1">รหัสผ่าน</label>
             <input
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              name="password" // เพิ่ม name ให้ตรงกับ key ใน state
+              value={user.password}
+              onChange={handleChange}
               className="w-full border rounded px-3 py-2"
               placeholder="รหัสผ่าน"
               required
@@ -50,17 +84,17 @@ const Login = () => {
 
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors"
           >
             เข้าสู่ระบบ
           </button>
         </form>
 
         <p className="text-sm text-gray-600 mt-4">
-          ยังไม่มีบัญชี?{" "}
-          <Link to="/register" className="text-blue-600 hover:underline">
+          ยังไม่มีบัญชี? {/* เปลี่ยนจาก Link เป็นแท็ก a */}
+          <a href="/register" className="text-blue-600 hover:underline ml-1">
             สมัครสมาชิก
-          </Link>
+          </a>
         </p>
       </div>
     </div>
