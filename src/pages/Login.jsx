@@ -1,9 +1,10 @@
 import { useState } from "react";
 import AuthService from "../services/authentication.service";
 import Swal from "sweetalert2";
+import { useAuth } from "../context/AuthContext"; // 1. นำเข้า useAuth
 
 const Login = () => {
-  // ปรับ State ให้เป็น Object เหมือนหน้า Register เพื่อความง่ายในการส่งข้อมูล
+  const { login } = useAuth(); // 2. ดึงฟังก์ชัน login มาใช้
   const [user, setUser] = useState({
     username: "",
     password: "",
@@ -17,27 +18,20 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!user.username || !user.password) {
-      Swal.fire({
-        title: "กรุณากรอกข้อมูลให้ครบถ้วน",
-        icon: "warning",
-      });
-      return;
-    }
-
     try {
-      // เรียกใช้ AuthService (สมมติว่าคุณมีฟังก์ชัน login เตรียมไว้)
       const response = await AuthService.login(user.username, user.password);
 
       if (response.status === 200) {
+        // 3. ส่งข้อมูลผู้ใช้เข้า Context (เพื่อให้ Navbar อัปเดต)
+        login(response.data);
+
         Swal.fire({
           title: "เข้าสู่ระบบสำเร็จ",
-          text: `ยินดีต้อนรับคุณ ${user.username}`,
+          text: `ยินดีต้อนรับคุณ ${response.data.username}`,
           icon: "success",
           timer: 1500,
           showConfirmButton: false,
         }).then(() => {
-          // ใช้ window.location แทน navigate
           window.location.href = "/";
         });
       }
@@ -60,38 +54,33 @@ const Login = () => {
             <label className="block text-sm font-medium mb-1">Username</label>
             <input
               type="text"
-              name="username" // เพิ่ม name ให้ตรงกับ key ใน state
+              name="username"
               value={user.username}
               onChange={handleChange}
               className="w-full border rounded px-3 py-2"
-              placeholder="กรอกชื่อผู้ใช้"
               required
             />
           </div>
-
           <div>
             <label className="block text-sm font-medium mb-1">รหัสผ่าน</label>
             <input
               type="password"
-              name="password" // เพิ่ม name ให้ตรงกับ key ใน state
+              name="password"
               value={user.password}
               onChange={handleChange}
               className="w-full border rounded px-3 py-2"
-              placeholder="รหัสผ่าน"
               required
             />
           </div>
-
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors"
+            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
           >
             เข้าสู่ระบบ
           </button>
         </form>
-
         <p className="text-sm text-gray-600 mt-4">
-          ยังไม่มีบัญชี? {/* เปลี่ยนจาก Link เป็นแท็ก a */}
+          ยังไม่มีบัญชี?{" "}
           <a href="/register" className="text-blue-600 hover:underline ml-1">
             สมัครสมาชิก
           </a>

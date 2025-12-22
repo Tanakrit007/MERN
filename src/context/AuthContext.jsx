@@ -1,39 +1,34 @@
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import tokenService from "../services/token.service"; // นำเข้า tokenService
 
-const AuthContext = createContext(null);
+const AuthContext = createContext();
 
-export function AuthProvider({ children }) {
+export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem("authUser");
-      if (raw) setUser(JSON.parse(raw));
-    } catch {}
+    // โหลดข้อมูลผู้ใช้จาก Cookies เมื่อเปิดเว็บ
+    const currentUser = tokenService.getUser();
+    if (currentUser) {
+      setUser(currentUser);
+    }
   }, []);
 
-  useEffect(() => {
-    try {
-      if (user) localStorage.setItem("authUser", JSON.stringify(user));
-      else localStorage.removeItem("authUser");
-    } catch {}
-  }, [user]);
+  const login = (userData) => {
+    setUser(userData);
+  };
 
-  const login = (payload) => setUser(payload);
-  const logout = () => setUser(null);
+  const logout = () => {
+    tokenService.removeUser(); // ลบ Cookies
+    setUser(null);
+    window.location.href = "/login";
+  };
 
-  const value = useMemo(() => ({ user, login, logout }), [user]);
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
+  return (
+    <AuthContext.Provider value={{ user, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
 
-export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
-  return ctx;
-}
+export const useAuth = () => useContext(AuthContext);

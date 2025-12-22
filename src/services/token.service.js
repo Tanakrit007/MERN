@@ -16,10 +16,18 @@ const removeUser = () => {
 };
 
 const setUser = (user) => {
-  cookies.set("user", JSON.stringify(user), {
-    path: "/",
-    expires: new Date(Date.now() + 86400), //24*60*60 = 86400 = 1 day
-  });
+  cookies.set(
+    "user",
+    JSON.stringify({
+      id: user.id,
+      username: user.username,
+      accessToken: user.accessToken,
+    }),
+    {
+      path: "/",
+      expires: new Date(Date.now() + 86400), //24*60*60 = 86400 = 1 day
+    }
+  );
 };
 
 const tokenService = {
