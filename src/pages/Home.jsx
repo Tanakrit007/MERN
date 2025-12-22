@@ -1,33 +1,55 @@
-import React, { useState } from "react";
-import Post from "../components/Post";
+import React, { useState, useEffect } from "react";
+import Post from "../Components/Post"; // ตรวจสอบชื่อโฟลเดอร์ให้ตรง (Components ตัวใหญ่)
+import postService from "../services/post.service"; // ตรวจสอบ Path ของไฟล์ service ของคุณ
 
 const Home = () => {
-  const [posts, setPosts] = useState([
-    {
-      id: 1,
-      title: "Sample Post",
-      cover:
-        "https://tse3.mm.bing.net/th/id/OIP.XWg3dHcV8p2tHkRlofEFkQHaEo?cb=ucfimg2&ucfimg=1&w=1600&h=1000&rs=1&pid=ImgDetMain&o=7&rm=3",
-      author: "Author Name",
-      createdAt: "2024-06-01",
-      summary: "This is a summary of the sample post.",
-    },
-    {
-      id: 2,
-      title: "เพิ่มเติม: ข่าวใหม่",
-      cover:
-        "https://mir-s3-cdn-cf.behance.net/projects/max_808/5d7b08147314711.Y3JvcCwyMjI5LDE3NDQsMzM2LDA.jpg",
-      author: "ผู้เขียนใหม่",
-      createdAt: "2025-12-08",
-      summary: "นี่คือสรุปของข่าวที่เพิ่มเข้ามาอีกหนึ่งรายการ",
-    },
-  ]);
+  // 1. เปลี่ยนค่าเริ่มต้นของ posts ให้เป็น Array ว่าง []
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // 2. ใช้ useEffect เพื่อดึงข้อมูลทันทีที่หน้าเว็บโหลด
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        setLoading(true);
+        // เรียกใช้ฟังก์ชัน getAllPosts จาก postService
+        const response = await postService.getAllPosts();
+
+        // ตรวจสอบว่า response มีข้อมูลหรือไม่ (ปกติข้อมูลจะอยู่ใน response.data)
+        if (response.data) {
+          setPosts(response.data);
+        }
+      } catch (error) {
+        console.error("เกิดข้อผิดพลาดในการดึงข้อมูลโพสต์:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPosts();
+  }, []); // [] หมายถึงให้รันแค่รอบเดียวตอนโหลดหน้า
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-[50vh]">
+        <span className="loading loading-dots loading-lg">
+          กำลังโหลดข้อมูล...
+        </span>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-4">
-      {posts.map((post, index) => (
-        <Post postDetail={post} key={post.id} />
-      ))}
+    <div className="space-y-6">
+      {posts.length > 0 ? (
+        posts.map((post, index) => (
+          <Post postDetail={post} key={post.id || index} index={index} />
+        ))
+      ) : (
+        <div className="text-center py-10">
+          <p className="text-gray-500 italic">ยังไม่มีโพสต์ในขณะนี้</p>
+        </div>
+      )}
     </div>
   );
 };

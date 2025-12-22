@@ -1,103 +1,130 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router"; // ใช้จาก react-router ตาม package.json
 import AuthService from "../services/authentication.service";
 import Swal from "sweetalert2";
+import { useAuthContext } from "../context/AuthContext"; // นำเข้าเพื่อเช็คสถานะการล็อกอิน
 
 const Register = () => {
+  const navigate = useNavigate();
+  const { user: userInfo } = useAuthContext(); // ดึงสถานะ user ปัจจุบันมาตรวจสอบ
+
   const [user, setUser] = useState({
     username: "",
+    email: "",
     password: "",
   });
 
+  // ส่วนป้องกัน: ถ้าล็อกอินอยู่แล้ว (userInfo มีค่า) ให้ดีดไปหน้า Home ทันที
+  useEffect(() => {
+    if (userInfo) {
+      navigate("/");
+    }
+  }, [userInfo, navigate]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setUser((user) => ({ ...user, [name]: value }));
+    setUser((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  const handleSubmit = async () => {
-    if (!user.username || !user.password) {
-      Swal.fire({
-        title: "password หรือ username ไม่ถูกต้อง",
-        icon: "error",
-        draggable: true,
-      });
-    } else {
-      try {
-        const response = await AuthService.register(
-          user.username,
-          user.password
-        );
-        if (response.status === 201 || response.status === 200) {
-          Swal.fire({
-            title: "สมัครสมาชิกสำเร็จ",
-            text: response.data.message,
-            icon: "success",
-            draggable: true,
-          }).then(() => {
-            // ใช้คำสั่งนี้แทนการ navigate ครับ
-            window.location.href = "/login";
-          });
-        }
-      } catch (error) {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await AuthService.register(
+        user.username,
+        user.email,
+        user.password
+      );
+
+      if (response.status === 200) {
         Swal.fire({
-          title: "เกิดข้อผิดพลาด",
-          text: error.response?.data?.message || "ไม่สามารถสมัครได้",
-          icon: "error",
+          title: "ลงทะเบียนสำเร็จ",
+          text: "ระบบกำลังนำคุณไปหน้าเข้าสู่ระบบ",
+          icon: "success",
+          timer: 1500,
+          showConfirmButton: false,
+        }).then(() => {
+          navigate("/login"); // เมื่อสมัครเสร็จให้ไปหน้า Login
         });
       }
+    } catch (error) {
+      Swal.fire({
+        title: "ลงทะเบียนล้มเหลว",
+        text: error.response?.data?.message || "เกิดข้อผิดพลาดในการลงทะเบียน",
+        icon: "error",
+      });
     }
   };
 
+  // ถ้าล็อกอินแล้ว ไม่ต้องแสดงผลหน้า Register ให้เห็นเลย
+  if (userInfo) return null;
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="w-full max-w-md bg-white p-6 rounded shadow">
-        <h2 className="text-2xl font-semibold mb-4">สมัครสมาชิก</h2>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSubmit();
-          }}
-          className="space-y-4"
-        >
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+      <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
+        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
+          สมัครสมาชิก
+        </h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Username</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Username
+            </label>
             <input
               type="text"
               name="username"
               value={user.username}
               onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
-              placeholder="Username"
+              className="w-full border border-gray-300 rounded-md px-4 py-2 mt-1 outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
-
           <div>
-            <label className="block text-sm font-medium mb-1">รหัสผ่าน</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Email
+            </label>
+            <input
+              type="email"
+              name="email"
+              value={user.email}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-md px-4 py-2 mt-1 outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              รหัสผ่าน
+            </label>
             <input
               type="password"
               name="password"
               value={user.password}
               onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
-              placeholder="รหัสผ่าน"
+              className="w-full border border-gray-300 rounded-md px-4 py-2 mt-1 outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
-
           <button
             type="submit"
-            className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
+            className="w-full bg-blue-600 text-white font-semibold py-2 rounded-md hover:bg-blue-700 transition-colors"
           >
-            สมัครสมาชิก
+            ลงทะเบียน
           </button>
         </form>
-
-        <p className="text-sm text-gray-600 mt-4">
-          มีบัญชีอยู่แล้ว?
-          <a href="/login" className="text-blue-600 hover:underline ml-1">
-            เข้าสู่ระบบ
-          </a>
-        </p>
+        <div className="mt-4 text-center">
+          <p className="text-sm text-gray-600">
+            มีบัญชีอยู่แล้ว?{" "}
+            <button
+              onClick={() => navigate("/login")}
+              className="text-blue-600 hover:underline"
+            >
+              เข้าสู่ระบบ
+            </button>
+          </p>
+        </div>
       </div>
     </div>
   );

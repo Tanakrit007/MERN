@@ -7,8 +7,7 @@ const getAccessToken = () => {
 };
 
 const getUser = () => {
-  const user = cookies.get("user");
-  return user;
+  return cookies.get("user");
 };
 
 const removeUser = () => {
@@ -16,18 +15,21 @@ const removeUser = () => {
 };
 
 const setUser = (user) => {
-  cookies.set(
-    "user",
-    JSON.stringify({
-      id: user.id,
-      username: user.username,
-      accessToken: user.accessToken,
-    }),
-    {
-      path: "/",
-      expires: new Date(Date.now() + 86400), //24*60*60 = 86400 = 1 day
-    }
-  );
+  if (user) {
+    // แก้ไข: เช็คว่ามีข้อมูล user จริง
+    cookies.set(
+      "user",
+      {
+        id: user.id,
+        username: user.username,
+        accessToken: user.accessToken,
+      },
+      {
+        path: "/",
+        expires: new Date(Date.now() + 86400000), // 1 วัน
+      }
+    );
+  }
 };
 
 const tokenService = {

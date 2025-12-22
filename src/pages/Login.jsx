@@ -1,14 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AuthService from "../services/authentication.service";
 import Swal from "sweetalert2";
-import { useAuth } from "../context/AuthContext"; // 1. นำเข้า useAuth
+import { useAuthContext } from "../context/AuthContext"; // นำเข้า Custom Hook ที่เราสร้างไว้ใน AuthContext
+import { useNavigate } from "react-router"; // นำเข้าจาก react-router ตามที่ระบุใน package.json
 
 const Login = () => {
-  const { login } = useAuth(); // 2. ดึงฟังก์ชัน login มาใช้
+  const { login, user: userInfo } = useAuthContext(); // ดึงสถานะ user และฟังก์ชัน login มาจาก Context
+  const navigate = useNavigate();
   const [user, setUser] = useState({
     username: "",
     password: "",
   });
+
+  // ส่วนป้องกัน: ถ้าตรวจสอบพบว่ามีการ Login อยู่แล้ว (userInfo ไม่เป็น null)
+  // ให้ดีด (navigate) ผู้ใช้กลับไปหน้าแรกทันทีเพื่อไม่ให้เห็นหน้า Login ซ้ำ
+  useEffect(() => {
+    if (userInfo) {
+      navigate("/");
+    }
+  }, [userInfo, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -17,12 +27,11 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
-      const response = await AuthService.login(user.username, user.password);
+      const response = await AuthService.login(user.username, user.password); // เรียก API login
 
       if (response.status === 200) {
-        // 3. ส่งข้อมูลผู้ใช้เข้า Context (เพื่อให้ Navbar อัปเดต)
+        // เรียกใช้ฟังก์ชัน login จาก AuthContext เพื่อบันทึกข้อมูลลง State และ Cookie
         login(response.data);
 
         Swal.fire({
@@ -32,7 +41,8 @@ const Login = () => {
           timer: 1500,
           showConfirmButton: false,
         }).then(() => {
-          window.location.href = "/";
+          // เปลี่ยนหน้าไปยัง Home โดยไม่รีโหลด Browser ทั้งหมด (Client-side routing)
+          navigate("/");
         });
       }
     } catch (error) {
@@ -46,45 +56,57 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="w-full max-w-md bg-white p-6 rounded shadow">
-        <h2 className="text-2xl font-semibold mb-4">เข้าสู่ระบบ</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+      <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
+        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
+          เข้าสู่ระบบ
+        </h2>
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium mb-1">Username</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Username
+            </label>
             <input
               type="text"
               name="username"
+              placeholder="กรอกชื่อผู้ใช้ของคุณ"
               value={user.username}
               onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
+              className="w-full border border-gray-300 rounded-md px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">รหัสผ่าน</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              รหัสผ่าน
+            </label>
             <input
               type="password"
               name="password"
+              placeholder="กรอกรหัสผ่าน"
               value={user.password}
               onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
+              className="w-full border border-gray-300 rounded-md px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
               required
             />
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+            className="w-full bg-blue-600 text-white font-semibold py-2 rounded-md hover:bg-blue-700 transition-colors shadow-sm"
           >
             เข้าสู่ระบบ
           </button>
         </form>
-        <p className="text-sm text-gray-600 mt-4">
-          ยังไม่มีบัญชี?{" "}
-          <a href="/register" className="text-blue-600 hover:underline ml-1">
-            สมัครสมาชิก
-          </a>
-        </p>
+
+        <div className="mt-6 text-center text-sm text-gray-600">
+          ยังไม่มีบัญชีสมาชิก?{" "}
+          <button
+            onClick={() => navigate("/register")}
+            className="text-blue-600 font-medium hover:underline focus:outline-none"
+          >
+            สมัครสมาชิกใหม่
+          </button>
+        </div>
       </div>
     </div>
   );

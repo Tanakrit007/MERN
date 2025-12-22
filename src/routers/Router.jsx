@@ -7,6 +7,7 @@ import Register from "../pages/Register";
 import Edit from "../pages/Edit";
 import PostDetails from "../pages/PostDetail";
 import PostByAuthor from "../pages/PostByAuthor";
+import GuestRoute from "./GuestRoute";
 
 const router = createBrowserRouter([
   {
@@ -23,11 +24,19 @@ const router = createBrowserRouter([
       },
       {
         path: "login",
-        element: <Login />,
+        element: (
+          <GuestRoute>
+            <Login />
+          </GuestRoute>
+        ),
       },
       {
         path: "register",
-        element: <Register />,
+        element: (
+          <GuestRoute>
+            <Register />
+          </GuestRoute>
+        ),
       },
       {
         path: "edit/:id",
