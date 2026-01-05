@@ -4,14 +4,14 @@ const API_URL = import.meta.env.VITE_POST_URL;
 const getAllPosts = async () => {
   return await api.get(`${API_URL}`);
 };
-const getById = async (id) => {
+const getPostById = async (id) => {
   return await api.get(`${API_URL}/${id}`);
 };
 const getByAuthorId = async (id) => {
   return await api.get(`${API_URL}/author/${id}`);
 };
-const createPost = async (post) => {
-  return await api.post(`${API_URL}`, post);
+const createPost = async (posts) => {
+  return await api.post(`${API_URL}/create`, posts);
 };
 const updatePost = async (id, post) => {
   return await api.put(`${API_URL}/${id}`, post);
@@ -22,7 +22,7 @@ const deletePost = async (id) => {
 
 const postService = {
   getAllPosts,
-  getById,
+  getPostById,
   getByAuthorId,
   createPost,
   updatePost,

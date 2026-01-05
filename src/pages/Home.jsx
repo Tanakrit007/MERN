@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Post from "../Components/Post"; // ตรวจสอบชื่อโฟลเดอร์ให้ตรง (Components ตัวใหญ่)
 import postService from "../services/post.service"; // ตรวจสอบ Path ของไฟล์ service ของคุณ
 
