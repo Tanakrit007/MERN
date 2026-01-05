@@ -11,7 +11,11 @@ const getByAuthorId = async (id) => {
   return await api.get(`${API_URL}/author/${id}`);
 };
 const createPost = async (posts) => {
-  return await api.post(`${API_URL}/create`, posts);
+  return await api.post(`${API_URL}/create`, posts,{
+    headers: {
+      ""
+    }
+  });
 };
 const updatePost = async (id, post) => {
   return await api.put(`${API_URL}/${id}`, post);

@@ -1,117 +1,133 @@
-import { useState, useEffect, useContext } from "react";
-import { useParams } from "react-router";
+// src/pages/PostDetail.jsx
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import postService from "../services/post.service";
+import tokenService from "../services/token.service";
 import Swal from "sweetalert2";
-import { UserContext } from "../context/UserContext";
-import dompurify from "dompurify";
+import DOMPurify from "dompurify";
 
 const PostDetail = () => {
   const { id } = useParams();
-  const { userInfo } = useContext(UserContext);
-  const [post, setPost] = useState(null); // เริ่มต้นเป็น null เพื่อเช็คสถานะโหลดจริง
+  const navigate = useNavigate();
+  const [post, setPost] = useState(null);
 
   useEffect(() => {
     const fetchPost = async () => {
       try {
         const response = await postService.getPostById(id);
-        if (response.data) {
+        if (response.status === 200) {
           setPost(response.data);
         }
       } catch (error) {
         console.error("API Error:", error);
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "Failed to fetch post details.",
-        });
+        setPost(null);
       }
     };
-    fetchPost();
+    if (id) fetchPost();
   }, [id]);
 
-  // แสดง Loading ถ้ายังโหลดข้อมูลไม่เสร็จ
   if (!post) {
     return (
-      <div className="flex justify-center items-center min-h-[50vh]">
-        <span className="loading loading-spinner loading-lg"></span>
+      <div className="text-white text-center py-10">
+        Loading or Post Not Found (404)...
       </div>
     );
   }
 
   // --- ส่วนที่แก้ไขให้ปุ่มโชว์แน่นอน ---
+  // ดึงข้อมูลผู้ใช้จาก Cookie โดยตรงเพื่อให้ปุ่มโชว์ทันที
+  const userFromCookie = tokenService.getUser();
+  const currentUserId = userFromCookie?.id || userFromCookie?._id;
 
-  // 1. ดึงข้อมูล User จาก LocalStorage มาเช็ค (เพราะ userInfo ใน Context ตอนนี้เป็น undefined)
-  const userFromStorage = JSON.parse(localStorage.getItem("user"));
-
-  // 2. พยายามหา ID จากทุกที่ที่เป็นไปได้ (userInfo หรือ localStorage)
-  const currentUserId =
-    userInfo?.id ||
-    userInfo?._id ||
-    userFromStorage?.id ||
-    userFromStorage?._id;
-
-  // 3. ดึง ID เจ้าของโพสต์
+  // ดึง ID ของเจ้าของโพสต์ (author อาจเป็น Object หรือ ID String)
   const authorId = post.author?._id || post.author?.id || post.author;
 
-  // 4. เทียบโดยบังคับแปลงเป็น String และเช็คว่าต้องมีค่าทั้งคู่
+  // เทียบ ID โดยแปลงเป็น String ทั้งคู่ เพื่อป้องกันปัญหา Data Type ไม่ตรงกัน
   const isOwner =
     currentUserId && authorId && String(currentUserId) === String(authorId);
 
-  // DEBUG สำหรับดูค่าจริง:
-  console.log("Check Match:", {
-    current: String(currentUserId),
-    author: String(authorId),
-    isOwner: isOwner,
-  });
+  const handleDelete = async () => {
+    const result = await Swal.fire({
+      title: "ยืนยันการลบโพสต์?",
+      text: "คุณจะไม่สามารถกู้คืนโพสต์นี้ได้!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "ลบเลย",
+      cancelButtonText: "ยกเลิก",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await postService.deletePost(id);
+        await Swal.fire("สำเร็จ!", "โพสต์ของคุณถูกลบเรียบร้อย", "success");
+        navigate("/");
+      } catch (error) {
+        Swal.fire("Error", "ไม่สามารถลบโพสต์ได้", "error");
+      }
+    }
+  };
 
   return (
-    <div className="max-w-4xl mx-auto my-8 p-4">
-      <div className="card bg-base-100 shadow-xl overflow-hidden">
-        {post.cover && (
-          <figure className="w-full">
-            <img
-              src={post.cover}
-              alt={post.title}
-              className="w-full h-auto max-h-[500px] object-cover"
-            />
-          </figure>
-        )}
+    <div className="max-w-4xl mx-auto my-8 bg-white rounded-lg shadow-lg overflow-hidden">
+      {post.cover && (
+        <div className="w-full h-64 md:h-96 overflow-hidden">
+          <img
+            src={post.cover}
+            alt={post.title}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      )}
 
-        <div className="card-body">
-          <div className="flex justify-between items-start gap-4">
-            <h2 className="card-title text-3xl font-bold text-gray-800">
-              {post.title}
-            </h2>
-          </div>
+      <div className="p-6">
+        <h1 className="text-3xl font-bold text-gray-800 mb-4">{post.title}</h1>
 
-          <div className="flex gap-2 text-sm text-gray-500 mt-2 border-b pb-4">
-            <span className="font-semibold text-blue-600">
+        <div className="flex gap-4 mb-6 p-3 bg-gray-50 rounded-lg">
+          <span className="text-gray-700 font-medium">
+            By{" "}
+            <span className="text-blue-600">
               {typeof post.author === "object"
                 ? post.author.username
                 : "Author"}
             </span>
-            <span>|</span>
-            <span>{new Date(post.createdAt).toLocaleDateString()}</span>
-          </div>
+          </span>
+          <span className="text-gray-500 text-sm border-l pl-4">
+            {new Date(post.createdAt).toLocaleDateString()}
+          </span>
+        </div>
 
-          {/* ส่วนปุ่ม Edit และ Delete */}
+        <div
+          className="prose max-w-none text-gray-700 mb-8 leading-relaxed"
+          dangerouslySetInnerHTML={{
+            __html: DOMPurify.sanitize(post.content || post.summary),
+          }}
+        />
+
+        <div className="border-t pt-4 flex gap-2">
+          <button
+            onClick={() => navigate(-1)}
+            className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+          >
+            ← Back
+          </button>
+
+          {/* ปุ่มจะแสดงผลเฉพาะเจ้าของโพสต์ */}
           {isOwner && (
-            <div className="edit-row text-center flex items-center justify-end gap-2 mt-4">
-              <a className="btn btn-warning" href={`/edit/${id}`}>
-                Edit
+            <>
+              <a
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                href={`/edit/${id}`}
+              >
+                Edit Post
               </a>
-              <a className="btn btn-error" href={`/delete/${id}`}>
-                Delete
-              </a>
-            </div>
+              <button
+                onClick={handleDelete}
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+              >
+                Delete Post
+              </button>
+            </>
           )}
-
-          <div
-            className="content text-gray-700 mt-6 leading-relaxed prose max-w-none"
-            dangerouslySetInnerHTML={{
-              __html: dompurify.sanitize(post.content || post.summary),
-            }}
-          ></div>
         </div>
       </div>
     </div>

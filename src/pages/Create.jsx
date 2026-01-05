@@ -1,29 +1,27 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useAuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router";
-import postService from "../services/post.service"; // นำเข้า service
+import postService from "../services/post.service";
 import Swal from "sweetalert2";
+import Editor from "../Components/Editor.jsx";
 
 const Create = () => {
   const { user } = useAuthContext();
   const navigate = useNavigate();
+  const editorRef = useRef(null);
 
   const [post, setPost] = useState({
     title: "",
     summary: "",
     content: "",
-    cover: "",
+    file: null, // สำหรับเก็บ File Object
   });
 
-  // ป้องกันผู้ที่ไม่ได้ล็อกอิน
   useEffect(() => {
     if (!user) {
-      Swal.fire({
-        title: "กรุณาเข้าสู่ระบบ",
-        icon: "warning",
-      }).then(() => {
-        navigate("/login");
-      });
+      Swal.fire({ title: "กรุณาเข้าสู่ระบบ", icon: "warning" }).then(() =>
+        navigate("/login")
+      );
     }
   }, [user, navigate]);
 
@@ -32,12 +30,30 @@ const Create = () => {
     setPost((prev) => ({ ...prev, [name]: value }));
   };
 
+  // ฟังก์ชันดึงไฟล์จาก input
+  const handleFileChange = (e) => {
+    setPost((prev) => ({ ...prev, file: e.target.files[0] }));
+  };
+
+  // ฟังก์ชันรับค่าจาก Rich Editor
+  const handleContentChange = (value) => {
+    setPost((prev) => ({ ...prev, content: value }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // สร้าง FormData เพื่อส่งไฟล์
+    const formData = new FormData();
+    formData.append("title", post.title);
+    formData.append("summary", post.summary);
+    formData.append("content", post.content);
+    if (post.file) {
+      formData.append("file", post.file); // ชื่อ 'file' ต้องตรงกับที่ Backend รับ (เช่น Multer)
+    }
+
     try {
-      // เรียกใช้ API ผ่าน postService
-      const response = await postService.createPost(post);
+      const response = await postService.createPost(formData);
 
       if (response.status === 200 || response.status === 201) {
         Swal.fire({
@@ -45,16 +61,12 @@ const Create = () => {
           icon: "success",
           timer: 1500,
           showConfirmButton: false,
-        }).then(() => {
-          navigate("/");
-        });
+        }).then(() => navigate("/"));
       }
     } catch (error) {
       Swal.fire({
         title: "เกิดข้อผิดพลาด",
-        text:
-          error.response?.data?.message ||
-          "ไม่สามารถติดต่อ Server ได้ (404 Not Found)",
+        text: error.response?.data?.message || "ไม่สามารถติดต่อ Server ได้",
         icon: "error",
       });
     }
@@ -73,7 +85,6 @@ const Create = () => {
           <input
             type="text"
             name="title"
-            placeholder="ใส่หัวข้อที่น่าสนใจ..."
             value={post.title}
             onChange={handleChange}
             className="input input-bordered w-full"
@@ -86,7 +97,6 @@ const Create = () => {
           <input
             type="text"
             name="summary"
-            placeholder="สรุปสั้นๆ..."
             value={post.summary}
             onChange={handleChange}
             className="input input-bordered w-full"
@@ -94,28 +104,28 @@ const Create = () => {
           />
         </div>
 
+        {/* ส่วนอัปโหลดไฟล์ */}
         <div className="form-control">
-          <label className="label font-semibold">URL รูปภาพหน้าปก</label>
+          <label className="label font-semibold">รูปภาพหน้าปก (File)</label>
           <input
-            type="text"
-            name="cover"
-            placeholder="https://..."
-            value={post.cover}
-            onChange={handleChange}
-            className="input input-bordered w-full"
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="file-input file-input-bordered w-full"
+            required
           />
         </div>
 
+        {/* ส่วน Rich Text Editor */}
         <div className="form-control">
           <label className="label font-semibold">เนื้อหาโพสต์ทั้งหมด</label>
-          <textarea
-            name="content"
-            placeholder="เขียนเนื้อหาที่นี่..."
-            value={post.content}
-            onChange={handleChange}
-            className="textarea textarea-bordered h-48"
-            required
-          />
+          <div className="min-h-[300px] mb-12">
+            <Editor
+              value={post.content}
+              onChange={handleContentChange}
+              ref={editorRef}
+            />
+          </div>
         </div>
 
         <div className="flex justify-end gap-2 pt-4">
