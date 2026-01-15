@@ -1,5 +1,5 @@
 import { Cookies } from "react-cookie";
-const cookies = new Cookies();
+const cookie = new Cookies();
 
 const getAccessToken = () => {
   const user = getUser();
@@ -7,36 +7,38 @@ const getAccessToken = () => {
 };
 
 const getUser = () => {
-  return cookies.get("user");
+  const user = cookie.get("user");
+  return user;
 };
 
 const removeUser = () => {
-  cookies.remove("user", { path: "/" });
+  cookie.remove("user", { path: "/" });
 };
 
 const setUser = (user) => {
   if (user) {
-    // แก้ไข: เช็คว่ามีข้อมูล user จริง
-    cookies.set(
+    cookie.set(
       "user",
-      {
-        id: user.id,
-        username: user.username,
-        accessToken: user.accessToken,
-      },
+      JSON.stringify({
+        id: user?.id,
+        username: user?.username,
+        accessToken: user?.accessToken,
+      }),
       {
         path: "/",
-        expires: new Date(Date.now() + 86400000), // 1 วัน
+        expires: new Date(Date.now() + 86400), // 24*60*60 = 1 day
       }
     );
+  } else {
+    removeUser();
   }
 };
 
-const tokenService = {
+const TokenService = {
   getAccessToken,
   getUser,
-  removeUser,
   setUser,
+  removeUser,
 };
 
-export default tokenService;
+export default TokenService;

@@ -1,5 +1,5 @@
 {
-  "name": "bmern",
+  "name": "mern-blog",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -12,15 +12,11 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.17",
     "axios": "^1.13.2",
-    "daisyui": "^5.5.8",
-    "dompurify": "^3.3.0",
-    "quill": "^2.0.3",
     "react": "^19.2.0",
     "react-cookie": "^8.0.1",
     "react-dom": "^19.2.0",
-    "react-quill-new": "^3.7.0",
-    "react-router-dom": "^7.10.1",
-    "sweetalert2": "^11.26.4",
+    "react-router": "^7.10.1",
+    "sweetalert2": "^11.26.16",
     "tailwindcss": "^4.1.17"
   },
   "devDependencies": {
@@ -28,6 +24,7 @@
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.1",
+    "daisyui": "^5.5.8",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",

@@ -1,55 +1,34 @@
-import { useState, useEffect } from "react";
-import Post from "../Components/Post"; // ตรวจสอบชื่อโฟลเดอร์ให้ตรง (Components ตัวใหญ่)
-import postService from "../services/post.service"; // ตรวจสอบ Path ของไฟล์ service ของคุณ
+import React, { useState, useEffect } from "react";
+import Post from "../components/Post";
+import PostService from "../services/post.service";
+import Swal from "sweetalert2";
 
 const Home = () => {
-  // 1. เปลี่ยนค่าเริ่มต้นของ posts ให้เป็น Array ว่าง []
   const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  // 2. ใช้ useEffect เพื่อดึงข้อมูลทันทีที่หน้าเว็บโหลด
   useEffect(() => {
-    const fetchPosts = async () => {
+    const fetchAllPost = async () => {
       try {
-        setLoading(true);
-        // เรียกใช้ฟังก์ชัน getAllPosts จาก postService
-        const response = await postService.getAllPosts();
-
-        // ตรวจสอบว่า response มีข้อมูลหรือไม่ (ปกติข้อมูลจะอยู่ใน response.data)
-        if (response.data) {
+        const response = await PostService.getAllPosts();
+        if (response.status === 200) {
           setPosts(response.data);
         }
       } catch (error) {
-        console.error("เกิดข้อผิดพลาดในการดึงข้อมูลโพสต์:", error);
-      } finally {
-        setLoading(false);
+        Swal.fire({
+          title: "Home",
+          text: error?.response?.data?.message || error?.message,
+          icon: "error",
+        });
       }
     };
-
-    fetchPosts();
-  }, []); // [] หมายถึงให้รันแค่รอบเดียวตอนโหลดหน้า
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-[50vh]">
-        <span className="loading loading-dots loading-lg">
-          กำลังโหลดข้อมูล...
-        </span>
-      </div>
-    );
-  }
-
+    fetchAllPost();
+  }, []);
   return (
-    <div className="space-y-6">
-      {posts.length > 0 ? (
+    <div className="space-y-4">
+      {posts.length > 0 &&
         posts.map((post, index) => (
-          <Post postDetail={post} key={post.id || index} index={index} />
-        ))
-      ) : (
-        <div className="text-center py-10">
-          <p className="text-gray-500 italic">ยังไม่มีโพสต์ในขณะนี้</p>
-        </div>
-      )}
+          <Post key={index} index={index} {...post} />
+        ))}
+      {posts.length === 0 && <h1> No post </h1>}
     </div>
   );
 };

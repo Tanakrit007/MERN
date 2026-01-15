@@ -1,56 +1,27 @@
 import { createBrowserRouter } from "react-router";
+import Layout from "../components/Layout";
 import Home from "../pages/Home";
-import MainLayout from "../Components/MainLayout";
+import Edit from "../pages/Edit";
 import Create from "../pages/Create";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
-import Edit from "../pages/Edit";
-import PostDetails from "../pages/PostDetail";
-import PostByAuthor from "../pages/PostByAuthor";
-import GuestRoute from "./GuestRoute";
+import PostDetail from "../pages/PostDetail";
+import Author from "../pages/Author";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <MainLayout />,
+    element: <Layout />,
     children: [
-      {
-        path: "",
-        element: <Home />,
-      },
-      {
-        path: "create",
-        element: <Create />,
-      },
-      {
-        path: "login",
-        element: (
-          <GuestRoute>
-            <Login />
-          </GuestRoute>
-        ),
-      },
-      {
-        path: "register",
-        element: (
-          <GuestRoute>
-            <Register />
-          </GuestRoute>
-        ),
-      },
-      {
-        path: "edit/:id",
-        element: <Edit />,
-      },
-      {
-        path: "postDetail/:id",
-        element: <PostDetails />,
-      },
-      {
-        path: "postByAuthor/:tag",
-        element: <PostByAuthor />,
-      },
+      { path: "", element: <Home /> },
+      { path: "edit/:id", element: <Edit /> },
+      { path: "create", element: <Create /> },
+      { path: "login", element: <Login /> },
+      { path: "register", element: <Register /> },
+      { path: "post/:id", element: <PostDetail /> },
+      { path: "author/:id", element: <Author /> },
     ],
   },
 ]);
+
 export default router;

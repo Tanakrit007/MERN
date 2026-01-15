@@ -1,25 +1,22 @@
 import { useState, useEffect } from "react";
-import { UserContext } from "./userContext";
-import tokenService from "../services/token.service.js";
-
+import { UserContext } from "./UserContext";
+import TokenService from "../services/token.service";
 export const UserContextProvider = ({ children }) => {
-  const [userInfor, setUserInfor] = useState(tokenService.getUser());
-  const login = (User) => setUserInfor(User);
-  const logout = () => {
-    tokenService.removeUser();
-    setUserInfor(null);
+  const [userInfo, setUserInfo] = useState(getUser);
+  const logIn = (user) => setUserInfo(user);
+  const logOut = () => {
+    setUserInfo(null);
+    TokenService.removeUser();
   };
   function getUser() {
-    const savedUser = tokenService.getUser() || null;
+    const savedUser = TokenService.getUser() || null;
     return savedUser;
   }
   useEffect(() => {
-    tokenService.setUser(userInfor);
-  }, [userInfor]);
+    TokenService.setUser(userInfo);
+  }, [userInfo]);
   return (
-    <UserContext.Provider
-      value={{ userInfor, setUserInfor, login, logout, getUser }}
-    >
+    <UserContext.Provider value={{ userInfo, logIn, logOut }}>
       {children}
     </UserContext.Provider>
   );

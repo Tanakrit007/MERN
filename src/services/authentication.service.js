@@ -1,8 +1,10 @@
-import api from "./api.js";
+import api from "./api";
 const API_URL = import.meta.env.VITE_AUTH_URL;
-import tokenService from "./token.service.js";
+
+import TokenService from "./token.service";
 
 const register = async (username, password) => {
+  console.log("API URL ", API_URL);
   return await api.post(API_URL + "/register", { username, password });
 };
 
@@ -11,14 +13,14 @@ const login = async (username, password) => {
   const { status, data } = response;
   if (status === 200) {
     if (data?.accessToken) {
-      tokenService.setUser(data);
+      TokenService.setUser(data);
     }
   }
   return response;
 };
 
 const logout = () => {
-  tokenService.removeUser();
+  TokenService.removeUser();
 };
 
 const AuthService = {

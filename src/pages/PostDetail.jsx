@@ -1,134 +1,65 @@
-// src/pages/PostDetail.jsx
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import postService from "../services/post.service";
-import tokenService from "../services/token.service";
+import { useParams } from "react-router";
 import Swal from "sweetalert2";
-import DOMPurify from "dompurify";
+import PostService from "../services/post.service";
+import { useContext } from "react";
+import { UserContext } from "../context/UserContext";
 
 const PostDetail = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
-  const [post, setPost] = useState(null);
+  const { userInfo } = useContext(UserContext);
 
+  const [post, setPost] = useState({
+    _id: "",
+    title: "",
+    createdAt: "",
+    author: {},
+    content: "",
+  });
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const response = await postService.getPostById(id);
+        const response = await PostService.getById(id);
+        console.log(response);
+
         if (response.status === 200) {
           setPost(response.data);
         }
       } catch (error) {
-        console.error("API Error:", error);
-        setPost(null);
+        Swal.fire({
+          title: "Post Detail",
+          icon: "error",
+          text: error?.response?.data?.message || error.message,
+        });
       }
     };
-    if (id) fetchPost();
+    fetchPost();
   }, [id]);
-
-  if (!post) {
-    return (
-      <div className="text-white text-center py-10">
-        Loading or Post Not Found (404)...
-      </div>
-    );
-  }
-
-  // --- ส่วนที่แก้ไขให้ปุ่มโชว์แน่นอน ---
-  // ดึงข้อมูลผู้ใช้จาก Cookie โดยตรงเพื่อให้ปุ่มโชว์ทันที
-  const userFromCookie = tokenService.getUser();
-  const currentUserId = userFromCookie?.id || userFromCookie?._id;
-
-  // ดึง ID ของเจ้าของโพสต์ (author อาจเป็น Object หรือ ID String)
-  const authorId = post.author?._id || post.author?.id || post.author;
-
-  // เทียบ ID โดยแปลงเป็น String ทั้งคู่ เพื่อป้องกันปัญหา Data Type ไม่ตรงกัน
-  const isOwner =
-    currentUserId && authorId && String(currentUserId) === String(authorId);
-
-  const handleDelete = async () => {
-    const result = await Swal.fire({
-      title: "ยืนยันการลบโพสต์?",
-      text: "คุณจะไม่สามารถกู้คืนโพสต์นี้ได้!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "ลบเลย",
-      cancelButtonText: "ยกเลิก",
-    });
-
-    if (result.isConfirmed) {
-      try {
-        await postService.deletePost(id);
-        await Swal.fire("สำเร็จ!", "โพสต์ของคุณถูกลบเรียบร้อย", "success");
-        navigate("/");
-      } catch (error) {
-        Swal.fire("Error", "ไม่สามารถลบโพสต์ได้", "error");
-      }
-    }
-  };
-
   return (
-    <div className="max-w-4xl mx-auto my-8 bg-white rounded-lg shadow-lg overflow-hidden">
-      {post.cover && (
-        <div className="w-full h-64 md:h-96 overflow-hidden">
-          <img
-            src={post.cover}
-            alt={post.title}
-            className="w-full h-full object-cover"
-          />
-        </div>
-      )}
-
-      <div className="p-6">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">{post.title}</h1>
-
-        <div className="flex gap-4 mb-6 p-3 bg-gray-50 rounded-lg">
-          <span className="text-gray-700 font-medium">
+    <div className="post-page min-h-full min-w-full items-center justify-center p-4 pt-20">
+      <div className="bg-white p-8 rounded-b-lg shadow-lg max-4xl w-full">
+        <h1 className="text-3xl font-bold mb-4 text-grey-800">{post?.title}</h1>
+        <div className="text-grey-600 mb-4 text-center">
+          <time className="block mb-2">{post?.createdAt}</time>
+          <div className="author mb-2">
             By{" "}
-            <span className="text-blue-600">
-              {typeof post.author === "object"
-                ? post.author.username
-                : "Author"}
-            </span>
-          </span>
-          <span className="text-gray-500 text-sm border-l pl-4">
-            {new Date(post.createdAt).toLocaleDateString()}
-          </span>
-        </div>
-
-        <div
-          className="prose max-w-none text-gray-700 mb-8 leading-relaxed"
-          dangerouslySetInnerHTML={{
-            __html: DOMPurify.sanitize(post.content || post.summary),
-          }}
-        />
-
-        <div className="border-t pt-4 flex gap-2">
-          <button
-            onClick={() => navigate(-1)}
-            className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
-          >
-            ← Back
-          </button>
-
-          {/* ปุ่มจะแสดงผลเฉพาะเจ้าของโพสต์ */}
-          {isOwner && (
-            <>
-              <a
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                href={`/edit/${id}`}
-              >
-                Edit Post
+            <span className="text-blue-500">
+              @
+              <a href={`/author/${post?.author?._id}`}>
+                {post?.author?.username}
               </a>
-              <button
-                onClick={handleDelete}
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-              >
-                Delete Post
-              </button>
-            </>
+            </span>
+          </div>
+          {userInfo?.id === post?.author?._id && (
+            <div className="edit-row mb-4 text-center flex items-center justify-center gap-2">
+              <a className="btn btn-warning" href={`/edit/${post?._id}`}>
+                Edit
+              </a>
+              <a className="btn btn-error">Delete</a>
+            </div>
           )}
         </div>
+        <div className="content text-grey-700">{post?.content}</div>
       </div>
     </div>
   );
