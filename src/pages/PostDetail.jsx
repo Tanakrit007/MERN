@@ -1,27 +1,26 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router";
+import { useParams } from "react-router-dom";
+import DOMPurify from "dompurify";
+import postService from "../service/post.service";
 import Swal from "sweetalert2";
-import PostService from "../services/post.service";
-import { useContext } from "react";
-import { UserContext } from "../context/UserContext";
 
 const PostDetail = () => {
   const { id } = useParams();
-  const { userInfo } = useContext(UserContext);
-
   const [post, setPost] = useState({
     _id: "",
     title: "",
     createdAt: "",
     author: {},
     content: "",
+    file: "",
   });
+
+  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const response = await PostService.getById(id);
-        console.log(response);
-
+        const response = await postService.getById(id);
         if (response.status === 200) {
           setPost(response.data);
         }
@@ -35,31 +34,47 @@ const PostDetail = () => {
     };
     fetchPost();
   }, [id]);
+
   return (
-    <div className="post-page min-h-full min-w-full items-center justify-center p-4 pt-20">
-      <div className="bg-white p-8 rounded-b-lg shadow-lg max-4xl w-full">
-        <h1 className="text-3xl font-bold mb-4 text-grey-800">{post?.title}</h1>
-        <div className="text-grey-600 mb-4 text-center">
-          <time className="block mb-2">{post?.createdAt}</time>
-          <div className="author mb-2">
-            By{" "}
-            <span className="text-blue-500">
-              @
-              <a href={`/author/${post?.author?._id}`}>
-                {post?.author?.username}
-              </a>
-            </span>
-          </div>
-          {userInfo?.id === post?.author?._id && (
-            <div className="edit-row mb-4 text-center flex items-center justify-center gap-2">
-              <a className="btn btn-warning" href={`/edit/${post?._id}`}>
-                Edit
-              </a>
-              <a className="btn btn-error">Delete</a>
-            </div>
-          )}
+    <div className="card lg:card-side bg-base-100 shadow-sm">
+      <figure>
+        <img src={post.file || "/default-cover.jpg"} alt={post.title} />
+      </figure>
+
+      <div className="card-body">
+        <h2 className="card-title">{post.title}</h2>
+
+        <p>{post.createdAt}</p>
+
+        <div className="author mb-2">
+          By{" "}
+          <span className="text-blue-500">
+            @
+            <a href={`/author/${post?.author?._id}`}>
+              {post?.author?.username}
+            </a>
+          </span>
         </div>
-        <div className="content text-grey-700">{post?.content}</div>
+
+        {userInfo?.id === post?.author?._id && (
+          <div className="edit-row mb-4 text-center flex items-center justify-center gap-2">
+            <a className="btn btn-warning" href={`/edit/${post?._id}`}>
+              Edit
+            </a>
+            <a className="btn btn-error" href={`/delete/${post?._id}`}>
+              Delete
+            </a>
+          </div>
+        )}
+
+        <div
+          className="content text-grey-700"
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }}
+        ></div>
+
+        <div className="card-actions justify-end">
+          <button className="btn btn-primary">Listen</button>
+        </div>
       </div>
     </div>
   );
