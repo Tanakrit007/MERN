@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
-import Editor from "../components/Editor";
+import Editor from "../Components/Editor";
 import postService from "../service/post.service.js";
 
 const Create = () => {

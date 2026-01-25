@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Post from "../components/Post";
+import Post from "../Components/Post";
 import PostService from "../service/post.service";
 import Swal from "sweetalert2";
 
