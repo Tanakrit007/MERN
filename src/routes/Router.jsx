@@ -6,7 +6,7 @@ import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Create from "../pages/Create";
 import Edit from "../pages/Edit";
-import MainLayout from "../components/MainLayout";
+import MainLayout from "../Components/MainLayout";
 import PostByAuthor from "../pages/PostByAuthor";
 
 const router = createBrowserRouter([
