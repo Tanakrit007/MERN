@@ -20,7 +20,7 @@ const Register = () => {
       Swal.fire({
         icon: "error",
         title: "ข้อมูลไม่ครบ",
-        text: "กรุณากรอก Username และ Password",
+        text: "กรุณากรอก Username และ Password", 
       });
       return;
     }

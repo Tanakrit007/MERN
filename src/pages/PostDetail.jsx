@@ -1,21 +1,15 @@
-import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useState, useEffect, useContext } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import DOMPurify from "dompurify";
 import postService from "../service/post.service";
 import Swal from "sweetalert2";
+import { UserContext } from "../context/UserContext";
 
 const PostDetail = () => {
   const { id } = useParams();
-  const [post, setPost] = useState({
-    _id: "",
-    title: "",
-    createdAt: "",
-    author: {},
-    content: "",
-    file: "",
-  });
-
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+  const navigate = useNavigate();
+  const { userInfo } = useContext(UserContext);
+  const [post, setPost] = useState(null);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -26,7 +20,6 @@ const PostDetail = () => {
         }
       } catch (error) {
         Swal.fire({
-          title: "Post Detail",
           icon: "error",
           text: error?.response?.data?.message || error.message,
         });
@@ -35,46 +28,69 @@ const PostDetail = () => {
     fetchPost();
   }, [id]);
 
+  // ฟังก์ชันสำหรับการลบโพสต์
+  const handleDelete = async () => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const response = await postService.deletePost(id);
+        if (response.status === 200) {
+          await Swal.fire("Deleted!", "Your post has been deleted.", "success");
+          navigate("/"); // ลบเสร็จแล้วกลับหน้าแรก
+        }
+      } catch (error) {
+        Swal.fire("Error", error.response?.data?.message || "Delete failed", "error");
+      }
+    }
+  };
+
+  if (!post) return <div className="p-10 text-center">Loading...</div>;
+
   return (
-    <div className="card lg:card-side bg-base-100 shadow-sm">
-      <figure>
-        <img src={post.file || "/default-cover.jpg"} alt={post.title} />
+    <div className="card lg:card-side bg-base-100 shadow-xl m-5">
+      <figure className="lg:w-1/2">
+        {/* ใช้ post.cover ให้ตรงกับที่แก้ใน Backend */}
+        <img 
+          src={post.cover || "/default-cover.jpg"} 
+          alt={post.title} 
+          className="w-full h-full object-cover"
+        />
       </figure>
 
-      <div className="card-body">
-        <h2 className="card-title">{post.title}</h2>
+      <div className="card-body lg:w-1/2">
+        <h2 className="card-title text-3xl">{post.title}</h2>
+        <p className="text-gray-500">{new Date(post.createdAt).toLocaleString()}</p>
 
-        <p>{post.createdAt}</p>
-
-        <div className="author mb-2">
-          By{" "}
-          <span className="text-blue-500">
-            @
-            <a href={`/author/${post?.author?._id}`}>
-              {post?.author?.username}
-            </a>
-          </span>
+        <div className="author mb-4">
+          By <span className="text-blue-500 font-bold">@{post?.author?.username}</span>
         </div>
 
-        {userInfo?.id === post?.author?._id && (
-          <div className="edit-row mb-4 text-center flex items-center justify-center gap-2">
-            <a className="btn btn-warning" href={`/edit/${post?._id}`}>
-              Edit
-            </a>
-            <a className="btn btn-error" href={`/delete/${post?._id}`}>
-              Delete
-            </a>
-          </div>
-        )}
+        {userInfo?.id?.toString() === post?.author?._id?.toString() && (
+      <div className="flex gap-2 mb-4">
+      <a className="btn btn-warning" href={`/edit/${post?._id}`}>
+        Edit Post
+      </a>
+      <button className="btn btn-error" onClick={handleDelete}>
+        Delete Post
+      </button>
+    </div>
+  )}
 
         <div
-          className="content text-grey-700"
+          className="content prose lg:prose-xl"
           dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }}
         ></div>
 
-        <div className="card-actions justify-end">
-          <button className="btn btn-primary">Listen</button>
-        </div>
+        {/* ปุ่ม Listen ถูกลบออกแล้วเพื่อความสะอาด */}
       </div>
     </div>
   );
