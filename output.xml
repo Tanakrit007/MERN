@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.4.1 (Python 3.13.7 on win32)" generated="2026-02-13T17:55:23.178146" rpa="false" schemaversion="5">
+<suite id="s1" name="Frontend Test" source="C:\Users\ss545\OneDrive\เดสก์ท็อป\MERN\frontend_test.robot">
+<test id="s1-t1" name="Complete User Journey With Cookie Check" line="12">
+<kw name="Open My Browser">
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-02-13T17:55:23.524083" level="INFO">${options} = &lt;selenium.webdriver.chrome.options.Options object at 0x000001953E535BE0&gt;</msg>
+<var>${options}</var>
+<arg>sys.modules['selenium.webdriver'].ChromeOptions()</arg>
+<arg>sys, selenium.webdriver</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-02-13T17:55:23.523575" elapsed="0.000560"/>
+</kw>
+<kw name="Call Method" owner="BuiltIn">
+<arg>${options}</arg>
+<arg>add_argument</arg>
+<arg>--incognito</arg>
+<doc>Calls the named method of the given object with the provided arguments.</doc>
+<status status="PASS" start="2026-02-13T17:55:23.524588" elapsed="0.000284"/>
+</kw>
+<kw name="Call Method" owner="BuiltIn">
+<arg>${options}</arg>
+<arg>add_argument</arg>
+<arg>--no-sandbox</arg>
+<doc>Calls the named method of the given object with the provided arguments.</doc>
+<status status="PASS" start="2026-02-13T17:55:23.524978" elapsed="0.000223"/>
+</kw>
+<kw name="Call Method" owner="BuiltIn">
+<arg>${options}</arg>
+<arg>add_argument</arg>
+<arg>--disable-dev-shm-usage</arg>
+<doc>Calls the named method of the given object with the provided arguments.</doc>
+<status status="PASS" start="2026-02-13T17:55:23.525291" elapsed="0.000198"/>
+</kw>
+<kw name="Create Webdriver" owner="SeleniumLibrary">
+<msg time="2026-02-13T17:55:23.525738" level="INFO">Creating an instance of the Chrome WebDriver.</msg>
+<arg>Chrome</arg>
+<arg>options=${options}</arg>
+<doc>Creates an instance of Selenium WebDriver.</doc>
+<status status="PASS" start="2026-02-13T17:55:23.525582" elapsed="0.737852"/>
+</kw>
+<kw name="Go To" owner="SeleniumLibrary">
+<msg time="2026-02-13T17:55:24.264063" level="INFO">Opening url 'http://localhost:5173/register'</msg>
+<arg>${target_url}</arg>
+<doc>Navigates the current browser window to the provided ``url``.</doc>
+<status status="PASS" start="2026-02-13T17:55:24.263773" elapsed="0.240461"/>
+</kw>
+<kw name="Maximize Browser Window" owner="SeleniumLibrary">
+<doc>Maximizes current browser window.</doc>
+<status status="PASS" start="2026-02-13T17:55:24.504447" elapsed="0.020818"/>
+</kw>
+<arg>${URL_REG}</arg>
+<status status="PASS" start="2026-02-13T17:55:23.522874" elapsed="1.002528"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2026-02-13T17:55:24.526222" level="INFO">Typing text 'Tanakit_Test_4' into text field 'css=input[placeholder="Username"]'.</msg>
+<arg>css=input[placeholder="Username"]</arg>
+<arg>${USERNAME}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2026-02-13T17:55:24.525728" elapsed="0.122595"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2026-02-13T17:55:24.649181" level="INFO">Typing text 'Password123' into text field 'css=input[placeholder="Password"]'.</msg>
+<arg>css=input[placeholder="Password"]</arg>
+<arg>${PASSWORD}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2026-02-13T17:55:24.648777" elapsed="0.112833"/>
+</kw>
+<kw name="Click Element" owner="SeleniumLibrary">
+<msg time="2026-02-13T17:55:24.762275" level="INFO">Clicking element 'css=button[type="submit"]'.</msg>
+<arg>css=button[type="submit"]</arg>
+<doc>Click the element identified by ``locator``.</doc>
+<status status="PASS" start="2026-02-13T17:55:24.761970" elapsed="0.063280"/>
+</kw>
+<kw name="Run Keyword And Return Status" owner="BuiltIn">
+<kw name="Wait Until Page Contains" owner="SeleniumLibrary">
+<msg time="2026-02-13T17:55:30.213707" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="selenium-screenshot-1.png"&gt;&lt;img src="selenium-screenshot-1.png" width="800px"&gt;&lt;/a&gt;</msg>
+<msg time="2026-02-13T17:55:30.213902" level="FAIL">Text 'สมัครสมาชิกสำเร็จ' did not appear in 5 seconds.</msg>
+<arg>สมัครสมาชิกสำเร็จ</arg>
+<arg>timeout=5s</arg>
+<doc>Waits until ``text`` appears on the current page.</doc>
+<status status="FAIL" start="2026-02-13T17:55:24.826208" elapsed="5.390623">Text 'สมัครสมาชิกสำเร็จ' did not appear in 5 seconds.</status>
+</kw>
+<msg time="2026-02-13T17:55:30.217008" level="INFO">${status_pass} = False</msg>
+<var>${status_pass}</var>
+<arg>Wait Until Page Contains</arg>
+<arg>สมัครสมาชิกสำเร็จ</arg>
+<arg>timeout=5s</arg>
+<doc>Runs the specified keyword and returns the status as a Boolean value.</doc>
+<status status="PASS" start="2026-02-13T17:55:24.825728" elapsed="5.391308"/>
+</kw>
+<kw name="Run Keyword And Return Status" owner="BuiltIn">
+<kw name="Wait Until Page Contains" owner="SeleniumLibrary">
+<arg>Username is already used</arg>
+<arg>timeout=3s</arg>
+<doc>Waits until ``text`` appears on the current page.</doc>
+<status status="PASS" start="2026-02-13T17:55:30.217598" elapsed="0.009160"/>
+</kw>
+<msg time="2026-02-13T17:55:30.226938" level="INFO">${status_fail} = True</msg>
+<var>${status_fail}</var>
+<arg>Wait Until Page Contains</arg>
+<arg>Username is already used</arg>
+<arg>timeout=3s</arg>
+<doc>Runs the specified keyword and returns the status as a Boolean value.</doc>
+<status status="PASS" start="2026-02-13T17:55:30.217279" elapsed="0.009689"/>
+</kw>
+<if>
+<branch type="IF" condition="${status_pass}">
+<kw name="Log" owner="BuiltIn">
+<arg>Registration Successful!</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-13T17:55:30.227461" elapsed="0.000030"/>
+</kw>
+<kw name="Click Element" owner="SeleniumLibrary">
+<arg>xpath=//button[contains(text(), 'ไปหน้า Login')]</arg>
+<doc>Click the element identified by ``locator``.</doc>
+<status status="NOT RUN" start="2026-02-13T17:55:30.227603" elapsed="0.000034"/>
+</kw>
+<status status="NOT RUN" start="2026-02-13T17:55:30.227244" elapsed="0.000445"/>
+</branch>
+<branch type="ELSE IF" condition="${status_fail}">
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-02-13T17:55:30.228307" level="INFO">Username already exists, proceeding to login.</msg>
+<arg>Username already exists, proceeding to login.</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-02-13T17:55:30.227915" elapsed="0.000461"/>
+</kw>
+<kw name="Go To" owner="SeleniumLibrary">
+<msg time="2026-02-13T17:55:30.228663" level="INFO">Opening url 'http://localhost:5173/login'</msg>
+<arg>${URL_LOGIN}</arg>
+<doc>Navigates the current browser window to the provided ``url``.</doc>
+<status status="PASS" start="2026-02-13T17:55:30.228503" elapsed="0.111244"/>
+</kw>
+<status status="PASS" start="2026-02-13T17:55:30.227753" elapsed="0.112128"/>
+</branch>
+<branch type="ELSE">
+<kw name="Log" owner="BuiltIn">
+<arg>Unexpected state or registration failed for other reasons.</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-13T17:55:30.340180" elapsed="0.000053"/>
+</kw>
+<kw name="Go To" owner="SeleniumLibrary">
+<arg>${URL_LOGIN}</arg>
+<doc>Navigates the current browser window to the provided ``url``.</doc>
+<status status="NOT RUN" start="2026-02-13T17:55:30.340394" elapsed="0.000046"/>
+</kw>
+<status status="NOT RUN" start="2026-02-13T17:55:30.339975" elapsed="0.000526"/>
+</branch>
+<status status="PASS" start="2026-02-13T17:55:30.227190" elapsed="0.113360"/>
+</if>
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>css=input[placeholder="Username"]</arg>
+<arg>10s</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2026-02-13T17:55:30.340828" elapsed="0.016313"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2026-02-13T17:55:30.357938" level="INFO">Typing text 'Tanakit_Test_4' into text field 'css=input[placeholder="Username"]'.</msg>
+<arg>css=input[placeholder="Username"]</arg>
+<arg>${USERNAME}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2026-02-13T17:55:30.357646" elapsed="0.076412"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2026-02-13T17:55:30.434743" level="INFO">Typing text 'Password123' into text field 'css=input[placeholder="Password"]'.</msg>
+<arg>css=input[placeholder="Password"]</arg>
+<arg>${PASSWORD}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2026-02-13T17:55:30.434478" elapsed="0.082085"/>
+</kw>
+<kw name="Click Element" owner="SeleniumLibrary">
+<msg time="2026-02-13T17:55:30.517353" level="INFO">Clicking element 'css=button[type="submit"]'.</msg>
+<arg>css=button[type="submit"]</arg>
+<doc>Click the element identified by ``locator``.</doc>
+<status status="PASS" start="2026-02-13T17:55:30.516979" elapsed="0.046333"/>
+</kw>
+<kw name="Wait Until Page Contains" owner="SeleniumLibrary">
+<arg>Logout</arg>
+<arg>10s</arg>
+<doc>Waits until ``text`` appears on the current page.</doc>
+<status status="PASS" start="2026-02-13T17:55:30.564028" elapsed="0.456797"/>
+</kw>
+<kw name="Get Cookies" owner="SeleniumLibrary">
+<msg time="2026-02-13T17:55:31.024778" level="INFO">${all_cookies} = user=%7B%22id%22%3A%22698f003654345e30753529ca%22%2C%22username%22%3A%22Tanakit_Test_4%22%2C%22accessToken%22%3A%22eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5OGYwMDM2NTQzNDVlMzA3NTM1MjljYSIsInVz...</msg>
+<var>${all_cookies}</var>
+<doc>Returns all cookies of the current page.</doc>
+<status status="PASS" start="2026-02-13T17:55:31.021131" elapsed="0.003690"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<msg time="2026-02-13T17:55:31.025335" level="INFO">All Cookies after login: user=%7B%22id%22%3A%22698f003654345e30753529ca%22%2C%22username%22%3A%22Tanakit_Test_4%22%2C%22accessToken%22%3A%22eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5OGYwMDM2NTQzNDVlMzA3NTM1MjljYSIsInVzZXJuYW1lIjoiVGFuYWtpdF9UZXN0XzQiLCJpYXQiOjE3NzA5ODAxMjksImV4cCI6MTc3MTA2NjUyOX0.oEzar31Ohgcv3BW8dcpry3Sp_y-CAF5zbFn5DaA4_dM%22%7D</msg>
+<arg>All Cookies after login: ${all_cookies}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="PASS" start="2026-02-13T17:55:31.025047" elapsed="0.000330"/>
+</kw>
+<kw name="Run Keyword And Ignore Error" owner="BuiltIn">
+<kw name="Check Specific Auth Cookie">
+<kw name="Get Cookie" owner="SeleniumLibrary">
+<msg time="2026-02-13T17:55:31.277618" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="selenium-screenshot-2.png"&gt;&lt;img src="selenium-screenshot-2.png" width="800px"&gt;&lt;/a&gt;</msg>
+<msg time="2026-02-13T17:55:31.277832" level="FAIL">Cookie with name 'token' not found.</msg>
+<var>${cookie}</var>
+<arg>${cookie_name}</arg>
+<doc>Returns information of cookie with ``name`` as an object.</doc>
+<status status="FAIL" start="2026-02-13T17:55:31.026112" elapsed="0.253557">Cookie with name 'token' not found.</status>
+</kw>
+<kw name="Should Not Be Empty" owner="BuiltIn">
+<arg>${cookie.value}</arg>
+<doc>Verifies that the given item is not empty.</doc>
+<status status="NOT RUN" start="2026-02-13T17:55:31.279924" elapsed="0.000055"/>
+</kw>
+<kw name="Log" owner="BuiltIn">
+<arg>Found Cookie: ${cookie_name} with value: ${cookie.value}</arg>
+<doc>Logs the given message with the given level.</doc>
+<status status="NOT RUN" start="2026-02-13T17:55:31.280129" elapsed="0.000039"/>
+</kw>
+<arg>token</arg>
+<status status="FAIL" start="2026-02-13T17:55:31.025856" elapsed="0.254485">Cookie with name 'token' not found.</status>
+</kw>
+<arg>Check Specific Auth Cookie</arg>
+<arg>token</arg>
+<doc>Runs the given keyword with the given arguments and ignores possible error.</doc>
+<status status="PASS" start="2026-02-13T17:55:31.025522" elapsed="0.254925"/>
+</kw>
+<kw name="Close Browser" owner="SeleniumLibrary" type="TEARDOWN">
+<doc>Closes the current browser.</doc>
+<status status="PASS" start="2026-02-13T17:55:31.280824" elapsed="2.466977"/>
+</kw>
+<doc>สมัครสมาชิก (รองรับชื่อซ้ำ) -&gt; Login -&gt; ตรวจสอบ Cookies</doc>
+<status status="PASS" start="2026-02-13T17:55:23.521745" elapsed="10.226281"/>
+</test>
+<status status="PASS" start="2026-02-13T17:55:23.180048" elapsed="10.568711"/>
+</suite>
+<statistics>
+<total>
+<stat pass="1" fail="0" skip="0">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat name="Frontend Test" id="s1" pass="1" fail="0" skip="0">Frontend Test</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>
